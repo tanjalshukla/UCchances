@@ -16,7 +16,7 @@ function App() {
   const [dGrades, setDGrades] = useState(0);
   const [fGrades, setFGrades] = useState(0);
   const [honorsCourses, setHonorsCourses] = useState(0);
-  const [gpa, setGpa] = useState('');
+  const [gpa, setGpa] = useState(-1);
   const [averageGpas, setAverageGpas] = useState([]);
   
   let TARGET = 0.3;
@@ -53,6 +53,14 @@ function App() {
 
   const handleGpaSubmit = async (e) => {
     e.preventDefault();
+    /*
+    const numAGrades = Number(aGrades);
+    const numBGrades = Number(bGrades);
+    const numCGrades = Number(cGrades);
+    const numDGrades = Number(dGrades);
+    const numFGrades = Number(fGrades);
+    const numHonorsCourses = Number(honorsCourses);
+    */
     try {
       const response = await axios.get('/api/highschools/findgpa', {
         params: {
@@ -288,7 +296,7 @@ function App() {
       )}
  
       {/* Display Calculated GPA */}
-      {gpa && (
+      {gpa != -1 && (
         <div className="mt-10 text-center">
           <h3 className="text-2xl font-semibold text-gray-800">
             Your UC GPA: {gpa}

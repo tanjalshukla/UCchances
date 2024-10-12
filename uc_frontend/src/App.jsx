@@ -178,7 +178,7 @@ function App() {
             Select Your High School:
           </label>
           <select
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
             value={selectedHighSchool}
             onChange={(e) => setSelectedHighSchool(e.target.value)}
           >
@@ -208,7 +208,7 @@ function App() {
               <input
                 type="number"
                 min="0"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={aGrades}
                 onChange={(e) => setAGrades(e.target.value)}
                 required
@@ -223,7 +223,7 @@ function App() {
               <input
                 type="number"
                 min="0"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={bGrades}
                 onChange={(e) => setBGrades(e.target.value)}
                 required
@@ -238,7 +238,7 @@ function App() {
               <input
                 type="number"
                 min="0"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={cGrades}
                 onChange={(e) => setCGrades(e.target.value)}
                 required
@@ -253,7 +253,7 @@ function App() {
               <input
                 type="number"
                 min="0"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={dGrades}
                 onChange={(e) => setDGrades(e.target.value)}
                 required
@@ -268,7 +268,7 @@ function App() {
               <input
                 type="number"
                 min="0"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={fGrades}
                 onChange={(e) => setFGrades(e.target.value)}
                 required
@@ -283,7 +283,7 @@ function App() {
               <input
                 type="number"
                 min="0"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={honorsCourses}
                 onChange={(e) => setHonorsCourses(e.target.value)}
                 required

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import logo from './assets/logo.webp'
 import './App.css';
 import './index.css';
 import axios from 'axios';
@@ -137,8 +136,14 @@ function App() {
   /////////////////////////////////
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-8">
-      <h1 className="text-4xl font-extrabold text-center mb-8 uc-blue-dark">
+    
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-8 border-2 border-black">
+      {/*Logo section*/}
+      <div className="flex justify-center mb-6">
+        <img src={logo} alt="Logo" className="h-16 w-128" />
+      </div>
+
+      <h1 className="text-4xl font-extrabold text-center mb-8 black">
         UC Admissions Calculator
       </h1>
 
@@ -146,9 +151,9 @@ function App() {
       <div className="flex justify-center space-x-6 mb-8">
         <button
           onClick={() => handleInStateSelection(true)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
             inState === true
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-primary text-white hover:bg-secondary'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -156,9 +161,9 @@ function App() {
         </button>
         <button
           onClick={() => handleInStateSelection(false)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
             inState === false
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-primary text-white hover:bg-secondary'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -288,7 +293,7 @@ function App() {
 
           <button
             type="submit"
-            className="w-full --uc-blue text-white py-3 rounded-lg font-semibold hover:bg-[var(--uc-gold)] transition-colors duration-300"
+            className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-secondary transition-colors duration-300"
           >
             Calculate GPA and Fetch Average GPAs
           </button>
@@ -334,10 +339,10 @@ function App() {
               <tbody>
                 {averageGpas.map((gpaData) => (
                   <tr key={gpaData.ucId} className="bg-white">
-                    <td className="border-b px-6 py-4 text-[var(--uc-blue)]">{`UC ${ucNames[gpaData.ucId]}`}</td>
-                    <td className="border-b px-6 py-4 text-[var(--uc-blue)]">{gpaData.averageGpa}</td>
-                    <td className="border-b px-6 py-4 text-[var(--uc-blue)]">{gpa}</td>
-                    <td className="border-b px-6 py-4 text-[var(--uc-blue)]">
+                    <td className="border-b px-6 py-4 text-primary">{`UC ${ucNames[gpaData.ucId]}`}</td>
+                    <td className="border-b px-6 py-4 text-primary">{gpaData.averageGpa}</td>
+                    <td className="border-b px-6 py-4 text-primary">{gpa}</td>
+                    <td className="border-b px-6 py-4 text-primary">
                       {gpaData.difference !== 'N/A'
                         ? `${parseFloat(gpaData.difference) > 0 ? '+' : ''}${gpaData.difference}`
                         : 'N/A'}

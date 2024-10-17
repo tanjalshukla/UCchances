@@ -177,11 +177,20 @@ function App() {
     }
   };
 
+  // Helper function to capitalize the first letter after every space
+  const formatHighSchoolName = (name) => {
+    return name
+      .toLowerCase() // Convert all to lowercase first
+      .split(' ')    // Split by spaces
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+      .join(' ');    // Join the words back together
+  };
+
   /////////////////////////////////
 
   return (
     
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-8 border-2 border-black">
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-8 border-[1.5px] border-black">
       {/*Logo section*/}
       <div className="flex justify-center mb-6">
         <img src={logo} alt="Logo" className="h-16 w-128" />
@@ -195,55 +204,66 @@ function App() {
       <div className="flex justify-center space-x-6 mb-8">
         <button
           onClick={() => handleInStateSelection(true)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300  ${
             inState === true
-              ? 'bg-primary text-white hover:bg-secondary'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              ? 'bg-primary text-white hover:bg-secondary '
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-[1.5px] border-secondary'
           }`}
         >
           In-State
         </button>
         <button
           onClick={() => handleInStateSelection(false)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-[1.5px] ${
             inState === false
               ? 'bg-primary text-white hover:bg-secondary'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-[1.5px] border-secondary'
           }`}
         >
           Out-of-State
         </button>
       </div>
 
-      {/* High Schools Dropdown */}
-      {highSchools.length > 0 && (
-        <div className="mb-8">
-          <label className="block mb-3 text-lg font-medium text-gray-700">
-            Select Your High School:
-          </label>
-          <select
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
-            value={selectedHighSchool}
-            onChange={(e) => setSelectedHighSchool(e.target.value)}
-          >
-            <option value="">-- Select your high school --</option>
-            {highSchools.map((school) => (
+    {/* High Schools Dropdown */}
+    {highSchools.length > 0 && (
+      <div className="mb-8">
+        <label className="block mb-3 text-lg font-medium text-gray-700">
+          Select Your High School:
+        </label>
+        <select
+          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
+          value={selectedHighSchool}
+          onChange={(e) => setSelectedHighSchool(e.target.value)}
+        >
+          <option value="">-- Select your high school --</option>
+
+          {highSchools.map((school) => {
+            const [beforeUnderscore, afterUnderscore] = school.highSchoolId.split("_");
+            const formattedBeforeUnderscore = formatHighSchoolName(beforeUnderscore.replace(/_/g, ' '));
+            const formattedAfterUnderscore = formatHighSchoolName(afterUnderscore.replace(/_/g, ' '));
+            return (
               <option key={school.highSchoolId} value={school.highSchoolId}>
-                {school.highSchoolId}
+                {formattedBeforeUnderscore} | {formattedAfterUnderscore}
               </option>
-            ))}
-          </select>
-        </div>
-      )}
+            );
+          })}
+        </select>
+      </div>
+    )}
+
 
 
       {/* Grading Period Selection */}
-      { selectedHighSchool && (<div className="flex justify-center space-x-6 mb-8">
+      { selectedHighSchool && 
+      (<div className="justify-center space-x-6 mb-8">
+        <label className="block mb-3 text-lg font-medium text-gray-700">
+          Select Your School's Grading Period:
+        </label>
         <button
           onClick={() => setGradingPeriod('semester')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-[1.5px] ${
             gradingPeriod === 'semester'
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-primary text-white hover:bg-secondary border-black'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -251,9 +271,9 @@ function App() {
         </button>
         <button
           onClick={() => setGradingPeriod('trimester')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration- border-[1.5px] ${
             gradingPeriod === 'trimester'
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-primary text-white hover:bg-secondary border-black'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -261,9 +281,9 @@ function App() {
         </button>
         <button
           onClick={() => setGradingPeriod('quarter')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-[1.5px] ${
             gradingPeriod === 'quarter'
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-primary text-white hover:bg-secondary border'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >

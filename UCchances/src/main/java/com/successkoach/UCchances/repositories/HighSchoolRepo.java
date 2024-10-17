@@ -9,7 +9,7 @@ public interface HighSchoolRepo extends JpaRepository<HighSchool, String> {
 
     // query which returns either all in-state or non in-state based on paramaters
     // into a list
-    @Query(value = "SELECT * FROM high_schools WHERE in_state = ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM high_schools WHERE in_state = ?1 ORDER BY high_school_id", nativeQuery = true)
     List<HighSchool> getInState(boolean is_in_state);
 
 }

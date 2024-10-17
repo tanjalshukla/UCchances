@@ -316,22 +316,22 @@ function App() {
             Comparison with Average GPAs for UC Schools:
           </h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
+            <table className="min-w-full bg-secondary border border-black">
               <thead>
                 <tr>
-                  <th className="border-b px-6 py-3 text-left text-lg font-medium text-white">
+                  <th className="border border-black px-6 py-3 text-left text-lg font-medium text-white">
                     UC Campus
                   </th>
-                  <th className="border-b px-6 py-3 text-left text-lg font-medium text-white">
+                  <th className="border border-black px-6 py-3 text-left text-lg font-medium text-white">
                     Average GPA
                   </th>
-                  <th className="border-b px-6 py-3 text-left text-lg font-medium text-white">
+                  <th className="border border-black px-6 py-3 text-left text-lg font-medium text-white">
                     Your GPA
                   </th>
-                  <th className="border-b px-6 py-3 text-left text-lg font-medium text-white">
+                  <th className="border border-black px-6 py-3 text-left text-lg font-medium text-white">
                     Difference
                   </th>
-                  <th className="border-b px-6 py-3 text-left text-lg font-medium text-white">
+                  <th className="border border-black px-6 py-3 text-left text-lg font-medium text-white">
                     Status
                   </th>
                 </tr>
@@ -339,16 +339,16 @@ function App() {
               <tbody>
                 {averageGpas.map((gpaData) => (
                   <tr key={gpaData.ucId} className="bg-white">
-                    <td className="border-b px-6 py-4 text-primary">{`UC ${ucNames[gpaData.ucId]}`}</td>
-                    <td className="border-b px-6 py-4 text-primary">{gpaData.averageGpa}</td>
-                    <td className="border-b px-6 py-4 text-primary">{gpa}</td>
-                    <td className="border-b px-6 py-4 text-primary">
+                    <td className="border border-black px-6 py-4 text-primary">{`UC ${ucNames[gpaData.ucId]}`}</td>
+                    <td className="border border-black px-6 py-4 text-primary">{gpaData.averageGpa}</td>
+                    <td className="border border-black px-6 py-4 text-primary">{gpa}</td>
+                    <td className="border border-black px-6 py-4 text-primary">
                       {gpaData.difference !== 'N/A'
                         ? `${parseFloat(gpaData.difference) > 0 ? '+' : ''}${gpaData.difference}`
                         : 'N/A'}
                     </td>
                     <td
-                      className={`border-b px-6 py-4 font-semibold ${
+                      className={`border border-primary px-6 py-4 font-semibold ${
                         gpaData.status === 'Safety'
                           ? 'text-green-600'
                           : gpaData.status === 'Target'

@@ -18,6 +18,8 @@ function App() {
   const [honorsCourses, setHonorsCourses] = useState(0);
   const [gpa, setGpa] = useState(-1);
   const [averageGpas, setAverageGpas] = useState([]);
+  const [gradingPeriod, setGradingPeriod] = useState('semester');
+  const [errorMessage, setErrorMessage] = useState('');
   
   let TARGET = 0.3;
 
@@ -39,12 +41,10 @@ function App() {
       const response = await axios.get('/api/findHighSchool/get', {
         params: {cond: inState}, 
       });
-      console.log("checkpoint 2");
       for (const h of response.data) {
         console.log(h.countyId);
         console.log(h.inState);
       }
-      console.log("checkpoint 3")
       setHighSchools(response.data);
     } catch (error){
         console.error('Error fetching high schools:', error);
@@ -53,16 +53,17 @@ function App() {
 
   const handleGpaSubmit = async (e) => {
     e.preventDefault();
-    /*
-    const numAGrades = Number(aGrades);
-    const numBGrades = Number(bGrades);
-    const numCGrades = Number(cGrades);
-    const numDGrades = Number(dGrades);
-    const numFGrades = Number(fGrades);
-    const numHonorsCourses = Number(honorsCourses);
-    */
+    
+    const maxHonors = getMaxHonorsCourses(gradingPeriod);
+
+    if(honorsCourses > maxHonors) {
+      setErrorMessage(`We can only count up to ${maxHonors} honors courses in a ${gradingPeriod}.`);
+    } else {
+      setErrorMessage('');
+    }
+
     try {
-      const response = await axios.get('/api/highschools/findgpa', {
+      const response = await axios.get(`/api/highschools/findgpa/${gradingPeriod}`, {
         params: {
           a: aGrades,
           b: bGrades,
@@ -72,6 +73,7 @@ function App() {
           honors: honorsCourses,
         },    
       });
+
       setGpa(response.data)
       
       const avgGpaArray = [];
@@ -92,24 +94,53 @@ function App() {
         });
 
 
-        if(avgResponse.data.entryCount == 0) {
+        if (avgResponse.data.entryCount == 0) {
           if (!inState) {
             avgGpaArray.push({
               ucId,
               averageGpa: "No UC Data for admitted students from your school. Sorry!",
               difference: "N/A",
               status: "Unknown",
-            })
+            });
           } else {
-              const countyAvg = await axios.get("/api/highschools/county", {
+            try {
+              const countyAvgResponse = await axios.get("/api/highschools/county", {
                 params: {
                   county_id: countyId,
-                  uc_id: ucId, 
+                  uc_id: ucId,
                 },
-              })
-          }  
-          
-        } else {
+              });
+        
+              const countyAverageGpa = countyAvgResponse.data.averageGPA; // Ensure this matches your backend response
+              const difference = (response.data - countyAverageGpa).toFixed(2);
+              let status = '';
+        
+              if (difference > TARGET) {
+                status = "Safety";
+              } else if (difference > TARGET * -1) {
+                status = "Target";
+              } else {
+                status = "Reach";
+              }
+        
+              avgGpaArray.push({
+                ucId,
+                averageGpa: countyAverageGpa,
+                difference: difference,
+                status: status,
+              });
+            } catch (error) {
+              console.error('Error fetching county average GPA:', error);
+              avgGpaArray.push({
+                ucId,
+                averageGpa: "Error fetching county data.",
+                difference: "N/A",
+                status: "Unknown",
+              });
+            }
+          }
+        }
+         else {
           const averageGpa = avgResponse.data.averageGPA;
           const difference = (response.data - averageGpa).toFixed(2);
           console.log("gpa: "+ gpa + " avg:" + averageGpa + " diff: " + difference);
@@ -131,6 +162,19 @@ function App() {
 
     } catch (error) { 
       console.error('Error calculating GPA;', error);
+    }
+  };
+
+  const getMaxHonorsCourses = (gradingPeriod) => {
+    switch (gradingPeriod) {
+      case 'semester':
+        return 8;
+      case 'trimester':
+        return 12;
+      case 'quarter':
+        return 16;
+      default:
+        return 8;
     }
   };
 
@@ -187,9 +231,69 @@ function App() {
         </div>
       )}
 
+
+      {/* Grading Period Selection */}
+      { selectedHighSchool && (<div className="flex justify-center space-x-6 mb-8">
+        <button
+          onClick={() => setGradingPeriod('semester')}
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+            gradingPeriod === 'semester'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Semester
+        </button>
+        <button
+          onClick={() => setGradingPeriod('trimester')}
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+            gradingPeriod === 'trimester'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Trimester
+        </button>
+        <button
+          onClick={() => setGradingPeriod('quarter')}
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+            gradingPeriod === 'quarter'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Quarter
+        </button>
+      </div>)}
+
+
       {/* GPA Calculation Form */}
       {selectedHighSchool && (
         <form onSubmit={handleGpaSubmit} className="space-y-8">
+          {/* Display Error Message */}
+          {errorMessage && (
+            <div className="bg-gray-100 border border-gray-300 text-gray-800 px-4 py-3 rounded relative mb-6 flex items-center justify-between" role="alert">
+              <span className="block sm:inline">{errorMessage}</span>
+              <button
+                type="button"
+                className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                onClick={() => setErrorMessage('')}
+              >
+                <svg
+                  className="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            )}
           <h2 className="text-3xl font-semibold text-gray-800">
             Enter Your Grades
           </h2>
@@ -295,6 +399,8 @@ function App() {
         </form>
       )}
  
+
+
       {/* Display Calculated GPA */}
       {gpa != -1 && (
         <div className="mt-10 text-center">

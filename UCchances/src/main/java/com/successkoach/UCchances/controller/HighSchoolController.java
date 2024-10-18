@@ -20,4 +20,9 @@ public class HighSchoolController {
         return cont.getInState(cond);
     }
 
+    @GetMapping("/county")
+    public String getCounty(@RequestParam String high_school_id) {
+        return cont.getCounty(high_school_id);
+    }
+
 }

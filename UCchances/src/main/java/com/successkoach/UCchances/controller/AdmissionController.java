@@ -22,7 +22,7 @@ public class AdmissionController {
         int count = 0;
         Float val;
         float total = 0;
-        System.out.println("check");
+        //System.out.println("check");
         for (int i = START; i < END; i++) {
             val = cont.findHSgpa(hs_id, i, uc_id);
             if (val != null && val > 0) {
@@ -39,12 +39,12 @@ public class AdmissionController {
     }
 
     @GetMapping("/county")
-    public float getCountyAvg(@RequestParam String county_id, @RequestParam String uc_id) {
-        return cont.findCountyAvg(county_id, uc_id);
+    public float getCountyAvg(@RequestParam String uc_id, @RequestParam String county_id) {
+        return cont.findCountyAvg(uc_id, county_id);
     }
 
     @GetMapping("/specific")
-    public float getSpecificGPA(@RequestParam String hs_id, @RequestParam String uc_id, @RequestParam int year) {
+    public Float getSpecificGPA(@RequestParam String hs_id, @RequestParam String uc_id, @RequestParam int year) {
         return cont.findHSgpa(hs_id, year, uc_id);
     }
 

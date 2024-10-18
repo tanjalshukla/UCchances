@@ -8,7 +8,8 @@ function App() {
 
   const [inState, setInState] = useState(null);
   const [highSchools, setHighSchools] = useState([]);
-  const [selectedHighSchool, setSelectedHighSchool] = useState('');
+  const [selectedHighSchool, setSelectedHighSchool] = useState(null);
+  const [countyId, setCountyId] = useState(null);
   const [aGrades, setAGrades] = useState(0);
   const [bGrades, setBGrades] = useState(0);
   const [cGrades, setCGrades] = useState(0);
@@ -19,6 +20,7 @@ function App() {
   const [averageGpas, setAverageGpas] = useState([]);
   const [gradingPeriod, setGradingPeriod] = useState('semester');
   const [errorMessage, setErrorMessage] = useState('');
+  const [countyMessage, setCountyMessage] = useState('');
   
   let TARGET = 0.3;
 
@@ -54,7 +56,7 @@ function App() {
     e.preventDefault();
     
     const maxHonors = getMaxHonorsCourses(gradingPeriod);
-
+    setCountyMessage(new Set());
     if(honorsCourses > maxHonors) {
       setErrorMessage(`We can only count up to ${maxHonors} honors courses in a ${gradingPeriod}.`);
     } else {
@@ -77,17 +79,12 @@ function App() {
       
       const avgGpaArray = [];
 
-      const selectedHS = highSchools.find((hs) => hs.highSchoolId === selectedHighSchool);
-      
-      const countyId = selectedHS ? selectedHS.county_id : null;
-      const inState = selectedHS ? selectedHS.in_state : null;
-
-      console.log("selected hs: " + selectedHS + ", countyId: " + countyId + ", inState: " + inState);
+      console.log("selected hs: " + selectedHighSchool + ", countyId: " + countyId + ", inState: " + inState);
 
       for(const ucId of ucIDs) {
         const avgResponse = await axios.get("/api/highschools/avg", {
           params: {
-            hs_id: selectedHighSchool,
+            hs_id: selectedHighSchool.highSchoolId,
             uc_id: ucId,
           },
         });
@@ -97,20 +94,31 @@ function App() {
           if (!inState) {
             avgGpaArray.push({
               ucId,
-              averageGpa: "No UC Data for admitted students from your school. Sorry!",
+              averageGpa: "No UC Data for admitted students from your school.",
               difference: "N/A",
               status: "Unknown",
             });
           } else {
+            setCountyMessage(prev => new Set(prev).add(ucId));
             try {
+              console.log(countyId, ucId);
               const countyAvgResponse = await axios.get("/api/highschools/county", {
                 params: {
-                  county_id: countyId,
                   uc_id: ucId,
+                  county_id: countyId,
                 },
               });
-        
-              const countyAverageGpa = countyAvgResponse.data.averageGPA; // Ensure this matches your backend response
+              if (countyAvgResponse.data.entryCount == 0) {
+                avgGpaArray.push({
+                  ucId,
+                  averageGpa: "No UC Data for admitted students from your county.",
+                  difference: "N/A",
+                  status: "Unknown",
+                });
+            ;
+              }
+              const countyAverageGpa = countyAvgResponse.data; // Ensure this matches your backend response
+              // console.log(countyAvgResponse.data);
               const difference = (response.data - countyAverageGpa).toFixed(2);
               let status = '';
         
@@ -137,6 +145,7 @@ function App() {
                 status: "Unknown",
               });
             }
+            
           }
         }
          else {
@@ -157,7 +166,7 @@ function App() {
           });
         }
       }
-        setAverageGpas(avgGpaArray);
+      setAverageGpas(avgGpaArray);
 
     } catch (error) { 
       console.error('Error calculating GPA;', error);
@@ -177,20 +186,28 @@ function App() {
     }
   };
 
-  // Helper function to capitalize the first letter after every space
-  const formatHighSchoolName = (name) => {
-    return name
-      .toLowerCase() // Convert all to lowercase first
-      .split(' ')    // Split by spaces
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
-      .join(' ');    // Join the words back together
-  };
+  function formatHighSchoolName(highSchoolId) {
+    const parts = highSchoolId.split('_'); // Split by underscore
+    const schoolName = parts.slice(0, -1).join(' '); // Join all but the last part as the school name
+    const countyName = parts[parts.length - 1]; // Last part is the county
+  
+    // Capitalize the first letter of each word and make the rest lowercase
+    const capitalizeWords = (str) => 
+      str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  
+    const formattedSchoolName = capitalizeWords(schoolName);
+    const formattedCountyName = capitalizeWords(countyName);
+  
+    return `${formattedSchoolName} | ${formattedCountyName}`;
+  }
+  
+ 
 
   /////////////////////////////////
 
   return (
     
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-8 border-[1.5px] border-black">
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-8 border-2 border-black">
       {/*Logo section*/}
       <div className="flex justify-center mb-6">
         <img src={logo} alt="Logo" className="h-16 w-128" />
@@ -204,66 +221,59 @@ function App() {
       <div className="flex justify-center space-x-6 mb-8">
         <button
           onClick={() => handleInStateSelection(true)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300  ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
             inState === true
-              ? 'bg-primary text-white hover:bg-secondary '
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-[1.5px] border-secondary'
+              ? 'bg-primary text-white hover:bg-secondary'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
           In-State
         </button>
         <button
           onClick={() => handleInStateSelection(false)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-[1.5px] ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
             inState === false
               ? 'bg-primary text-white hover:bg-secondary'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-[1.5px] border-secondary'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
           Out-of-State
         </button>
       </div>
 
-    {/* High Schools Dropdown */}
-    {highSchools.length > 0 && (
-      <div className="mb-8">
-        <label className="block mb-3 text-lg font-medium text-gray-700">
-          Select Your High School:
-        </label>
-        <select
-          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
-          value={selectedHighSchool}
-          onChange={(e) => setSelectedHighSchool(e.target.value)}
-        >
-          <option value="">-- Select your high school --</option>
-
-          {highSchools.map((school) => {
-            const [beforeUnderscore, afterUnderscore] = school.highSchoolId.split("_");
-            const formattedBeforeUnderscore = formatHighSchoolName(beforeUnderscore.replace(/_/g, ' '));
-            const formattedAfterUnderscore = formatHighSchoolName(afterUnderscore.replace(/_/g, ' '));
-            return (
+      {/* High Schools Dropdown */}
+      {highSchools.length > 0 && (
+        <div className="mb-8">
+          <label className="block mb-3 text-lg font-medium text-gray-700">
+            Select Your High School:
+          </label>
+          <select
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
+            value= {selectedHighSchool ? selectedHighSchool.highSchoolId : ""}
+            onChange={(e) => {
+              const selectedSchool = highSchools.find((school) => school.highSchoolId === e.target.value);
+              setSelectedHighSchool(selectedSchool); // Set full HighSchool object
+              setCountyId(selectedSchool.countyId); // Set countyId from the object
+            }}
+          >
+            <option value="">-- Select your high school --</option>
+            {highSchools.map((school) => (
               <option key={school.highSchoolId} value={school.highSchoolId}>
-                {formattedBeforeUnderscore} | {formattedAfterUnderscore}
+                {formatHighSchoolName(school.highSchoolId)} {/* Display formatted name */}
               </option>
-            );
-          })}
-        </select>
-      </div>
-    )}
-
+            ))}
+          </select>
+        </div>
+      )}
 
 
       {/* Grading Period Selection */}
-      { selectedHighSchool && 
-      (<div className="justify-center space-x-6 mb-8">
-        <label className="block mb-3 text-lg font-medium text-gray-700">
-          Select Your School's Grading Period:
-        </label>
+      { selectedHighSchool && (<div className="flex justify-center space-x-6 mb-8">
         <button
           onClick={() => setGradingPeriod('semester')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-[1.5px] ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
             gradingPeriod === 'semester'
-              ? 'bg-primary text-white hover:bg-secondary border-black'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -271,9 +281,9 @@ function App() {
         </button>
         <button
           onClick={() => setGradingPeriod('trimester')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration- border-[1.5px] ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
             gradingPeriod === 'trimester'
-              ? 'bg-primary text-white hover:bg-secondary border-black'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -281,9 +291,9 @@ function App() {
         </button>
         <button
           onClick={() => setGradingPeriod('quarter')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-[1.5px] ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
             gradingPeriod === 'quarter'
-              ? 'bg-primary text-white hover:bg-secondary border'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -493,6 +503,34 @@ function App() {
           </div>
         </div>
       )}
+
+<div className="mt-4"></div> {/* Add margin top here */}
+
+      {/* Display County Message */}
+      {countyMessage.size > 0 && (
+            <div className="bg-gray-100 border border-gray-300 text-gray-800 px-4 py-3 rounded relative mb-6 flex items-center justify-between" role="alert">
+              <span className="block sm:inline">We weren't able to find some data for your high school. Instead, we used data from your county. <br />
+              County data pulled for: {Array.from(countyMessage).join(', ')}</span>
+              <button
+                type="button"
+                className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                onClick={() => setCountyMessage('')}
+              >
+                <svg
+                  className="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            )}
     </div>
   );
 }

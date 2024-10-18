@@ -8,7 +8,8 @@ function App() {
 
   const [inState, setInState] = useState(null);
   const [highSchools, setHighSchools] = useState([]);
-  const [selectedHighSchool, setSelectedHighSchool] = useState('');
+  const [selectedHighSchool, setSelectedHighSchool] = useState(null);
+  const [countyId, setCountyId] = useState(null);
   const [aGrades, setAGrades] = useState(0);
   const [bGrades, setBGrades] = useState(0);
   const [cGrades, setCGrades] = useState(0);
@@ -19,6 +20,7 @@ function App() {
   const [averageGpas, setAverageGpas] = useState([]);
   const [gradingPeriod, setGradingPeriod] = useState('semester');
   const [errorMessage, setErrorMessage] = useState('');
+  const [countyMessage, setCountyMessage] = useState('');
   
   let TARGET = 0.3;
 
@@ -54,7 +56,7 @@ function App() {
     e.preventDefault();
     
     const maxHonors = getMaxHonorsCourses(gradingPeriod);
-
+    setCountyMessage(new Set());
     if(honorsCourses > maxHonors) {
       setErrorMessage(`We can only count up to ${maxHonors} honors courses in a ${gradingPeriod}.`);
     } else {
@@ -77,17 +79,12 @@ function App() {
       
       const avgGpaArray = [];
 
-      const selectedHS = highSchools.find((hs) => hs.highSchoolId === selectedHighSchool);
-      
-      const countyId = selectedHS ? selectedHS.county_id : null;
-      const inState = selectedHS ? selectedHS.in_state : null;
-
-      console.log("selected hs: " + selectedHS + ", countyId: " + countyId + ", inState: " + inState);
+      console.log("selected hs: " + selectedHighSchool + ", countyId: " + countyId + ", inState: " + inState);
 
       for(const ucId of ucIDs) {
         const avgResponse = await axios.get("/api/highschools/avg", {
           params: {
-            hs_id: selectedHighSchool,
+            hs_id: selectedHighSchool.highSchoolId,
             uc_id: ucId,
           },
         });
@@ -97,20 +94,31 @@ function App() {
           if (!inState) {
             avgGpaArray.push({
               ucId,
-              averageGpa: "No UC Data for admitted students from your school. Sorry!",
+              averageGpa: "No UC Data for admitted students from your school.",
               difference: "N/A",
               status: "Unknown",
             });
           } else {
+            setCountyMessage(prev => new Set(prev).add(ucId));
             try {
+              console.log(countyId, ucId);
               const countyAvgResponse = await axios.get("/api/highschools/county", {
                 params: {
-                  county_id: countyId,
                   uc_id: ucId,
+                  county_id: countyId,
                 },
               });
-        
-              const countyAverageGpa = countyAvgResponse.data.averageGPA; // Ensure this matches your backend response
+              if (countyAvgResponse.data.entryCount == 0) {
+                avgGpaArray.push({
+                  ucId,
+                  averageGpa: "No UC Data for admitted students from your county.",
+                  difference: "N/A",
+                  status: "Unknown",
+                });
+            ;
+              }
+              const countyAverageGpa = countyAvgResponse.data; // Ensure this matches your backend response
+              // console.log(countyAvgResponse.data);
               const difference = (response.data - countyAverageGpa).toFixed(2);
               let status = '';
         
@@ -137,6 +145,7 @@ function App() {
                 status: "Unknown",
               });
             }
+            
           }
         }
          else {
@@ -157,7 +166,7 @@ function App() {
           });
         }
       }
-        setAverageGpas(avgGpaArray);
+      setAverageGpas(avgGpaArray);
 
     } catch (error) { 
       console.error('Error calculating GPA;', error);
@@ -176,6 +185,23 @@ function App() {
         return 8;
     }
   };
+
+  function formatHighSchoolName(highSchoolId) {
+    const parts = highSchoolId.split('_'); // Split by underscore
+    const schoolName = parts.slice(0, -1).join(' '); // Join all but the last part as the school name
+    const countyName = parts[parts.length - 1]; // Last part is the county
+  
+    // Capitalize the first letter of each word and make the rest lowercase
+    const capitalizeWords = (str) => 
+      str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  
+    const formattedSchoolName = capitalizeWords(schoolName);
+    const formattedCountyName = capitalizeWords(countyName);
+  
+    return `${formattedSchoolName} | ${formattedCountyName}`;
+  }
+  
+ 
 
   /////////////////////////////////
 
@@ -223,13 +249,17 @@ function App() {
           </label>
           <select
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
-            value={selectedHighSchool}
-            onChange={(e) => setSelectedHighSchool(e.target.value)}
+            value= {selectedHighSchool ? selectedHighSchool.highSchoolId : ""}
+            onChange={(e) => {
+              const selectedSchool = highSchools.find((school) => school.highSchoolId === e.target.value);
+              setSelectedHighSchool(selectedSchool); // Set full HighSchool object
+              setCountyId(selectedSchool.countyId); // Set countyId from the object
+            }}
           >
             <option value="">-- Select your high school --</option>
             {highSchools.map((school) => (
               <option key={school.highSchoolId} value={school.highSchoolId}>
-                {school.highSchoolId}
+                {formatHighSchoolName(school.highSchoolId)} {/* Display formatted name */}
               </option>
             ))}
           </select>
@@ -473,6 +503,34 @@ function App() {
           </div>
         </div>
       )}
+
+<div className="mt-4"></div> {/* Add margin top here */}
+
+      {/* Display County Message */}
+      {countyMessage.size > 0 && (
+            <div className="bg-gray-100 border border-gray-300 text-gray-800 px-4 py-3 rounded relative mb-6 flex items-center justify-between" role="alert">
+              <span className="block sm:inline">We weren't able to find some data for your high school. Instead, we used data from your county. <br />
+              County data pulled for: {Array.from(countyMessage).join(', ')}</span>
+              <button
+                type="button"
+                className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                onClick={() => setCountyMessage('')}
+              >
+                <svg
+                  className="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            )}
     </div>
   );
 }

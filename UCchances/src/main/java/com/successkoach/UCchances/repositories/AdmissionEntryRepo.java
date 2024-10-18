@@ -12,6 +12,14 @@ public interface AdmissionEntryRepo extends JpaRepository<AdmissionEntry, Admiss
     Float findHSgpa(String hs_id, int year, String uc_id);
 
     // Query which takes every school in a county and provides average
-    @Query(value = "SELECT AVG(gpa) FROM admissions where county_id = ?1 AND uc_id = ?2", nativeQuery = true)
-    Float findCountyAvg(String county_id, String uc_id);
+    @Query(value = "SELECT AVG(ad.gpa) FROM admissions AS ad JOIN high_schools AS hs ON hs.high_school_id = ad.high_school_id WHERE ad.uc_id = ?1 AND hs.county_id = ?2 AND ad.gpa != 0 ", nativeQuery = true)
+    Float findCountyAvg(String uc_id, String county_id);
+
+
+    /*SELECT AVG(A.gpa) AS cGpa
+        FROM admissions A
+        JOIN high_schools hs
+        ON hs.high_school_id = a.high_school_id
+        WHERE a.uc_id = ? 
+        AND hs.county_id = ?*/
 }

@@ -12,4 +12,8 @@ public interface HighSchoolRepo extends JpaRepository<HighSchool, String> {
     @Query(value = "SELECT * FROM high_schools WHERE in_state = ?1 ORDER BY high_school_id", nativeQuery = true)
     List<HighSchool> getInState(boolean is_in_state);
 
+    // query which returns county based on high school id
+    @Query(value = "SELECT county_id FROM high_schools WHERE high_school_id = ?1", nativeQuery = true)
+    String getCounty(String high_school_id);
+
 }

@@ -21,6 +21,7 @@ function App() {
   const [gradingPeriod, setGradingPeriod] = useState('semester');
   const [errorMessage, setErrorMessage] = useState('');
   const [countyMessage, setCountyMessage] = useState('');
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredHighSchools, setFilteredHighSchools] = useState([]);
@@ -57,6 +58,10 @@ function App() {
   const calcHonorsCourses = () => {
     return Number(aGrades) + Number(bGrades) + Number(cGrades) + Number(dGrades) + Number(fGrades);
   }
+
+  const toggleInstructions = () => {
+    setShowInstructions(!showInstructions);
+  };
   
   //////ASYNC FUNCTIONS////////////
 
@@ -238,6 +243,8 @@ function App() {
   return (
     
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-8 border-2 border-black">
+
+
       {/*Logo section*/}
       <div className="flex justify-center mb-6">
       <a href="https://www.successkoach.com/" target="_blank">
@@ -245,9 +252,60 @@ function App() {
         </a>
       </div>
 
-      <h1 className="text-4xl font-extrabold text-center mb-8 black">
+      <h1 className="text-4xl font-extrabold text-center mb-2 black">
         UC Admissions Calculator
       </h1>
+
+        <div className="mb-2">
+        <button
+          onClick={toggleInstructions}
+          className="bg-secondary text-white px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition-colors duration-300"
+        >
+          {showInstructions ? 'Hide Instructions' : 'Show Instructions'}
+        </button>
+      </div>
+
+      {/* Popup Modal */}
+      {showInstructions && (
+        <>
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-black opacity-25 z-40" ></div>
+
+          {/* Modal Content */}
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full border-2 border-secondary">
+              <h2 className="text-xl font-bold mb-4">How Our Tool Works</h2>
+              <ul className="list-disc list-inside text-gray-700 text-left">
+                <li>
+                  We calculate your UC GPA and compare it with the average admitted GPA from your school.
+                </li>
+                <li>
+                  If there is no school data, we use county data to give a broader picture.
+                </li>
+                <li>
+                  For out-of-state high schools, missing data means we don't have sufficient records for your school.
+                </li>
+                <li>
+                  Our assessment is based solely on GPA and doesn't account for extracurriculars, awards, or essays.
+                </li>
+              </ul>
+              <p className="mt-4 text-gray-700">
+                Use this tool to evaluate your GPA in comparison to UC admissions trends.
+              </p>
+
+              {/* Close Button */}
+              <button
+                onClick={toggleInstructions}
+                className="mt-6 bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition-colors duration-300"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+
 
       {/* In-State / Out-of-State Selection */}
       <div className="flex justify-center space-x-6 mb-8">

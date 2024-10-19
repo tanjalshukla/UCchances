@@ -21,6 +21,11 @@ function App() {
   const [gradingPeriod, setGradingPeriod] = useState('semester');
   const [errorMessage, setErrorMessage] = useState('');
   const [countyMessage, setCountyMessage] = useState('');
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredHighSchools, setFilteredHighSchools] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   
   let TARGET = 0.3;
 
@@ -33,6 +38,22 @@ function App() {
 
   const ucIDs = ['SD', 'SB', 'LA', 'BK'];
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery.trim() === '') {
+        setFilteredHighSchools([]);
+      } else {
+        const filtered = highSchools.filter((school) =>
+          formatHighSchoolName(school.highSchoolId).toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredHighSchools(filtered);
+      }
+    }, 300); // Debounce delay of 300ms
+
+    // Cleanup function to clear the timeout if searchQuery changes quickly
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, highSchools]);
+  
   //////ASYNC FUNCTIONS////////////
 
   //Fetch high schools from backend when user selects type of school
@@ -221,7 +242,7 @@ function App() {
       <div className="flex justify-center space-x-6 mb-8">
         <button
           onClick={() => handleInStateSelection(true)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             inState === true
               ? 'bg-primary text-white hover:bg-secondary'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -231,7 +252,7 @@ function App() {
         </button>
         <button
           onClick={() => handleInStateSelection(false)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             inState === false
               ? 'bg-primary text-white hover:bg-secondary'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -243,26 +264,61 @@ function App() {
 
       {/* High Schools Dropdown */}
       {highSchools.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-8 relative">
           <label className="block mb-3 text-lg font-medium text-gray-700">
             Select Your High School:
           </label>
-          <select
+          <input
+            type="text"
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
-            value= {selectedHighSchool ? selectedHighSchool.highSchoolId : ""}
+            placeholder="Type to search..."
+            value={searchQuery}
             onChange={(e) => {
-              const selectedSchool = highSchools.find((school) => school.highSchoolId === e.target.value);
-              setSelectedHighSchool(selectedSchool); // Set full HighSchool object
-              setCountyId(selectedSchool.countyId); // Set countyId from the object
+              setSearchQuery(e.target.value);
+              setShowSuggestions(true);
             }}
-          >
-            <option value="">-- Select your high school --</option>
-            {highSchools.map((school) => (
-              <option key={school.highSchoolId} value={school.highSchoolId}>
-                {formatHighSchoolName(school.highSchoolId)} {/* Display formatted name */}
-              </option>
-            ))}
-          </select>
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => {
+              setTimeout(() => setShowSuggestions(false), 100);
+            }}
+          />
+
+          {searchQuery && (
+              <button
+              className="absolute inset-y-0 right-2 top-10 flex items-center px-2 text-gray-400 hover:text-black focus:outline-none"
+              onClick={() => {
+                setSearchQuery('');
+                setShowSuggestions(false);
+              }}
+            >
+              &#x2715;
+            </button>
+          )}
+
+          {showSuggestions && filteredHighSchools.length > 0 && (
+            <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-y-auto">
+              {filteredHighSchools.map((school) => (
+                <li
+                  key={school.highSchoolId}
+                  className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                  onClick={() => {
+                    setSelectedHighSchool(school);
+                    setCountyId(school.countyId);
+                    setSearchQuery(formatHighSchoolName(school.highSchoolId));
+                    setShowSuggestions(false);
+                  }}
+                >
+                  {formatHighSchoolName(school.highSchoolId)}
+                </li>
+              ))}
+            </ul>
+          )}
+          {/* No Results Found */}
+          {showSuggestions && searchQuery.trim() !== '' && filteredHighSchools.length === 0 && (
+            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 px-4 py-2">
+              No high schools found.
+            </div>
+          )}
         </div>
       )}
 
@@ -271,7 +327,7 @@ function App() {
       { selectedHighSchool && (<div className="flex justify-center space-x-6 mb-8">
         <button
           onClick={() => setGradingPeriod('semester')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             gradingPeriod === 'semester'
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -281,7 +337,7 @@ function App() {
         </button>
         <button
           onClick={() => setGradingPeriod('trimester')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             gradingPeriod === 'trimester'
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -291,7 +347,7 @@ function App() {
         </button>
         <button
           onClick={() => setGradingPeriod('quarter')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             gradingPeriod === 'quarter'
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'

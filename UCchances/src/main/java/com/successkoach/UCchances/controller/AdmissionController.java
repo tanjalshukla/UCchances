@@ -40,7 +40,7 @@ public class AdmissionController {
 
     @GetMapping("/county")
     public float getCountyAvg(@RequestParam String uc_id, @RequestParam String county_id) {
-        return cont.findCountyAvg(uc_id, county_id);
+        return (float) Math.round(cont.findCountyAvg(uc_id, county_id) * 100) / 100;
     }
 
     @GetMapping("/specific")

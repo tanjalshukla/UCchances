@@ -242,7 +242,7 @@ function App() {
       <div className="flex justify-center space-x-6 mb-8">
         <button
           onClick={() => handleInStateSelection(true)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             inState === true
               ? 'bg-primary text-white hover:bg-secondary'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -252,7 +252,7 @@ function App() {
         </button>
         <button
           onClick={() => handleInStateSelection(false)}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 border-secondary ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             inState === false
               ? 'bg-primary text-white hover:bg-secondary'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -327,7 +327,7 @@ function App() {
       { selectedHighSchool && (<div className="flex justify-center space-x-6 mb-8">
         <button
           onClick={() => setGradingPeriod('semester')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             gradingPeriod === 'semester'
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -337,7 +337,7 @@ function App() {
         </button>
         <button
           onClick={() => setGradingPeriod('trimester')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             gradingPeriod === 'trimester'
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -347,7 +347,7 @@ function App() {
         </button>
         <button
           onClick={() => setGradingPeriod('quarter')}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 border-2 ${
             gradingPeriod === 'quarter'
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'

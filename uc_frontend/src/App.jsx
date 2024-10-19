@@ -54,6 +54,10 @@ function App() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery, highSchools]);
   
+  const calcHonorsCourses = () => {
+    return Number(aGrades) + Number(bGrades) + Number(cGrades) + Number(dGrades) + Number(fGrades);
+  }
+  
   //////ASYNC FUNCTIONS////////////
 
   //Fetch high schools from backend when user selects type of school
@@ -78,10 +82,15 @@ function App() {
     
     const maxHonors = getMaxHonorsCourses(gradingPeriod);
     setCountyMessage(new Set());
+
     if(honorsCourses > maxHonors) {
-      setErrorMessage(`We can only count up to ${maxHonors} honors courses in a ${gradingPeriod}.`);
+      setErrorMessage(`The UC system only counts up to ${maxHonors} honors courses in a ${gradingPeriod} grading system.`);
     } else {
       setErrorMessage('');
+    }
+
+    if(honorsCourses > calcHonorsCourses()) {
+      setHonorsCourses(calcHonorsCourses());
     }
 
     try {
@@ -231,7 +240,9 @@ function App() {
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-8 border-2 border-black">
       {/*Logo section*/}
       <div className="flex justify-center mb-6">
-        <img src={logo} alt="Logo" className="h-16 w-128" />
+      <a href="https://www.successkoach.com/" target="_blank">
+          <img src={logo} alt="Logo" className="h-16 w-128" />
+        </a>
       </div>
 
       <h1 className="text-4xl font-extrabold text-center mb-8 black">
@@ -273,6 +284,7 @@ function App() {
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
             placeholder="Type to search..."
             value={searchQuery}
+            maxLength={70}
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setShowSuggestions(true);
@@ -398,6 +410,7 @@ function App() {
               <input
                 type="number"
                 min="0"
+                max = "50"
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={aGrades}
                 onChange={(e) => setAGrades(e.target.value)}
@@ -413,6 +426,7 @@ function App() {
               <input
                 type="number"
                 min="0"
+                max = "50"
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={bGrades}
                 onChange={(e) => setBGrades(e.target.value)}
@@ -428,6 +442,7 @@ function App() {
               <input
                 type="number"
                 min="0"
+                max = "50"
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={cGrades}
                 onChange={(e) => setCGrades(e.target.value)}
@@ -443,6 +458,7 @@ function App() {
               <input
                 type="number"
                 min="0"
+                max = "50"
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={dGrades}
                 onChange={(e) => setDGrades(e.target.value)}
@@ -458,6 +474,7 @@ function App() {
               <input
                 type="number"
                 min="0"
+                max = "50"
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
                 value={fGrades}
                 onChange={(e) => setFGrades(e.target.value)}
@@ -473,7 +490,9 @@ function App() {
               <input
                 type="number"
                 min="0"
+                max = {250}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
+                errorMessage= "Number of honors courses must be less than or equal to all other courses."
                 value={honorsCourses}
                 onChange={(e) => setHonorsCourses(e.target.value)}
                 required
@@ -588,7 +607,10 @@ function App() {
             </div>
             )}
     </div>
+
   );
+
+
 }
 
 export default App;

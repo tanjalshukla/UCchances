@@ -19,7 +19,7 @@ function App() {
   const [gpa, setGpa] = useState(-1);
   const [averageGpas, setAverageGpas] = useState([]);
   const [gradingPeriod, setGradingPeriod] = useState('semester');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errormessage, setErrorMessage] = useState('');
   const [countyMessage, setCountyMessage] = useState('');
   const [showInstructions, setShowInstructions] = useState(false);
 
@@ -276,6 +276,7 @@ function App() {
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full border-2 border-secondary">
               <h2 className="text-xl font-bold mb-4">How Our Tool Works</h2>
               <ul className="list-disc list-inside text-gray-700 text-left">
+              <li> For details on inputting the fields, check out the <a href="https://admission.universityofcalifornia.edu/admission-requirements/freshman-requirements/gpa-requirement.html" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">UC Website</a>. </li>
                 <li>
                   We calculate your UC GPA and compare it with the average admitted GPA from your school.
                 </li>
@@ -432,9 +433,9 @@ function App() {
       {selectedHighSchool && (
         <form onSubmit={handleGpaSubmit} className="space-y-8">
           {/* Display Error Message */}
-          {errorMessage && (
+          {errormessage && (
             <div className="bg-gray-100 border border-gray-300 text-gray-800 px-4 py-3 rounded relative mb-6 flex items-center justify-between" role="alert">
-              <span className="block sm:inline">{errorMessage}</span>
+              <span className="block sm:inline">{errormessage}</span>
               <button
                 type="button"
                 className="text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -550,7 +551,7 @@ function App() {
                 min="0"
                 max = {250}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
-                errorMessage= "Number of honors courses must be less than or equal to all other courses."
+                errormessage= "Number of honors courses must be less than or equal to all other courses."
                 value={honorsCourses}
                 onChange={(e) => setHonorsCourses(e.target.value)}
                 required

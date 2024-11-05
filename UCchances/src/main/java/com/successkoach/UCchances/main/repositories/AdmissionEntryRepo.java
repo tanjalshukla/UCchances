@@ -1,10 +1,11 @@
-package com.successkoach.UCchances.repositories;
+package com.successkoach.UCchances.main.repositories;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.successkoach.UCchances.model.AdmissionEntry;
-import com.successkoach.UCchances.model.AdmissionsKey;
+import com.successkoach.UCchances.main.model.AdmissionEntry;
+import com.successkoach.UCchances.main.model.AdmissionsKey;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AdmissionEntryRepo extends JpaRepository<AdmissionEntry, AdmissionsKey> {
     // Query which provides the gpa based off of the information given

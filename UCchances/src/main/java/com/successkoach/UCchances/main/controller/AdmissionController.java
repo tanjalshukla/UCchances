@@ -1,10 +1,10 @@
-package com.successkoach.UCchances.controller;
+package com.successkoach.UCchances.main.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.successkoach.UCchances.model.GpaResponse;
-import com.successkoach.UCchances.repositories.AdmissionEntryRepo;
+import com.successkoach.UCchances.main.model.GpaResponse;
+import com.successkoach.UCchances.main.repositories.AdmissionEntryRepo;
 
 @RestController
 @RequestMapping("/api/highschools")

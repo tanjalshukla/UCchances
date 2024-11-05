@@ -1,4 +1,4 @@
-package com.successkoach.UCchances.controller;
+package com.successkoach.UCchances.main.controller;
 
 import org.springframework.web.bind.annotation.*;
 

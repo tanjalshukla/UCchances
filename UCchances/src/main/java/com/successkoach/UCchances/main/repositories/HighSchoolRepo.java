@@ -1,9 +1,10 @@
-package com.successkoach.UCchances.repositories;
+package com.successkoach.UCchances.main.repositories;
 
-import com.successkoach.UCchances.model.HighSchool;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import com.successkoach.UCchances.main.model.HighSchool;
 
 public interface HighSchoolRepo extends JpaRepository<HighSchool, String> {
 

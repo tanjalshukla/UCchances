@@ -1,4 +1,4 @@
-package com.successkoach.UCchances.model;
+package com.successkoach.UCchances.main.model;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm run dev --prefix uc_frontend\" \"mvn -f UCchances/pom.xml spring-boot:run\"",
+    "build": "npm run build --prefix uc_frontend && mvn -f UCchances/pom.xml clean package",
+    "start": "java -jar UCchances/target/*.jar"
   },
   "keywords": [],
   "author": "",

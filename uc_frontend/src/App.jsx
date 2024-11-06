@@ -134,7 +134,7 @@ function App() {
               status: "Unknown",
             });
           } else {
-            setCountyMessage(prev => new Set(prev).add(ucId));
+            
             try {
               console.log(countyId, ucId);
               const countyAvgResponse = await axios.get("/api/highschools/county", {
@@ -171,11 +171,13 @@ function App() {
                 difference: difference,
                 status: status,
               });
+              setCountyMessage(prev => new Set(prev).add(ucId));
             } catch (error) {
               console.error('Error fetching county average GPA:', error);
+              
               avgGpaArray.push({
                 ucId,
-                averageGpa: "Error fetching county data.",
+                averageGpa: "No data found",
                 difference: "N/A",
                 status: "Unknown",
               });

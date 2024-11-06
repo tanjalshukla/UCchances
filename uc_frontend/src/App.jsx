@@ -252,11 +252,11 @@ function App() {
         </a>
       </div>
 
-      <h1 className="text-4xl font-extrabold text-center mb-2 black">
+      <h1 className="text-4xl font-extrabold text-center mb-6 black">
         UC Admissions Calculator
       </h1>
 
-        <div className="mb-2">
+        <div className="mb-4">
         <button
           onClick={toggleInstructions}
           className="bg-secondary text-white px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition-colors duration-300"
@@ -371,7 +371,7 @@ function App() {
               {filteredHighSchools.map((school) => (
                 <li
                   key={school.highSchoolId}
-                  className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                  className="block px-4 py-2 hover:bg-gray-200 cursor-pointer w-full"
                   onClick={() => {
                     setSelectedHighSchool(school);
                     setCountyId(school.countyId);
@@ -568,7 +568,6 @@ function App() {
         </form>
       )}
  
-
 
       {/* Display Calculated GPA */}
       {gpa != -1 && (

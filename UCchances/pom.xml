@@ -74,7 +74,7 @@
 		            <region>centralus</region>
 		            <runtime>
 		                <os>Linux</os>
-		                <javaVersion>Java 21</javaVersion>
+		                <javaVersion>Java </javaVersion>
 		                <webContainer>Java SE</webContainer>
 		            </runtime>
 		            <deployment>

@@ -21,6 +21,12 @@ jobs:
         with:
           java-version: '21'
 
+      - name: Copy Frontend to Backend
+        uses: actions/setup-node@v4
+        run:
+          npm run build
+          cp -a /uc_frontend/dist/. /UCchances/src/main/resources/static/
+
       - name: Build with Maven
         run: mvn -f UCchances/pom.xml clean package
 

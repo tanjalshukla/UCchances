@@ -373,7 +373,7 @@ function App() {
               {filteredHighSchools.map((school) => (
                 <li
                   key={school.highSchoolId}
-                  className="block px-4 py-2 hover:bg-gray-200 cursor-pointer w-full"
+                  className="flex justify-center items-center w-full min-w-full px-4 py-2 hover:bg-gray-200 cursor-pointer"
                   onClick={() => {
                     setSelectedHighSchool(school);
                     setCountyId(school.countyId);
